@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workspace Dashboard | Ultra</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Lexend+Deca:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --text-main: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.3);
+  --accent-white: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 10vh; 
+  background: #000 url('https://api.dujin.org/bing/1920.php') no-repeat center center/cover;
+  font-family: 'Lexend Deca', sans-serif;
+  color: var(--text-main);
+  overflow: hidden;
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: -1;
+}
+
+/* 1. 时间区域 */
+.time-area {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+#clock {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 135px; 
+  font-weight: 900; 
+  line-height: 1;
+  letter-spacing: -2px;
+  text-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+#date {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 8px; 
+  margin-top: 15px;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+/* 2. 搜索卡片 */
+.card {
+  width: 90%;
+  max-width: 600px; 
+  padding: 40px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(50px) saturate(180%);
+  -webkit-backdrop-filter: blur(50px) saturate(180%);
+  border-radius: 30px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 聚焦时：增强边框的亮度和发光感，而不移动位置 */
+.card:focus-within {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+}
+
+.search-input-group {
+  margin-bottom: 30px;
+}
+
+input {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  font-size: 20px;
+  font-weight: 400;
+  outline: none;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+  transform: scale(1.01); /* 极其轻微的扩充感 */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* 3. 引擎导航：优雅的平滑线动效 */
+.engine-tabs {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.engine-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  flex: 1;
+  text-align: center;
+  position: relative;
+  transition: color 0.4s ease;
+}
+
+/* 这里的伪元素是灵魂：平滑的横向展开线 */
+.engine-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  width: 60%;
+  height: 2px;
+  background: var(--accent-white);
+  transform: scaleX(0); /* 初始不可见 */
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.engine-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.engine-btn.active {
+  color: var(--accent-white);
+}
+
+.engine-btn.active::after {
+  transform: scaleX(1); /* 选中时平滑展开 */
+}
+
+.footer {
+  position: fixed;
+  bottom: 30px;
+  font-size: 10px;
+  letter-spacing: 4px;
+  opacity: 0.3;
+}
+</style>
+</head>
+
+<body>
+
+<div class="time-area">
+  <div id="clock">00:00</div>
+  <div id="date">MONDAY, DECEMBER 29</div>
+</div>
+
+<div class="card">
+  <form id="search-form">
+    <div class="search-input-group">
+      <input id="search-input" autofocus autocomplete="off">
+    </div>
+    <div class="engine-tabs" id="engine-bar">
+      <button type="button" class="engine-btn" data-engine="gg">Google</button>
+      <button type="button" class="engine-btn" data-engine="bi">Bing</button>
+      <button type="button" class="engine-btn" data-engine="bd">Baidu</button>
+      <button type="button" class="engine-btn" data-engine="dg">DuckGo</button>
+      <button type="button" class="engine-btn" data-engine="gh">GitHub</button>
+    </div>
+  </form>
+</div>
+
+<div class="footer">STAY FOCUSED </div>
+
+<script>
+(function(){
+  const engines = {
+    gg: "https://www.google.com/search?q=",
+    bi: "https://www.bing.com/search?q=",
+    bd: "https://www.baidu.com/s?wd=",
+    dg: "https://duckduckgo.com/?q=",
+    gh: "https://github.com/search?q="
+  };
+
+  const form = document.getElementById("search-form");
+  const input = document.getElementById("search-input");
+  const buttons = document.querySelectorAll("#engine-bar button");
+  
+  let currentEngine = localStorage.getItem("preferredEngine") || "gg";
+
+  const setActiveEngine = (id) => {
+    currentEngine = id;
+    localStorage.setItem("preferredEngine", id);
+    buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.engine === id));
+  };
+
+  setActiveEngine(currentEngine);
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => setActiveEngine(btn.dataset.engine));
+  });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const query = input.value.trim();
+    if (query) window.location.href = engines[currentEngine] + encodeURIComponent(query);
+  });
+
+  function updateTime() {
+    const now = new Date();
+    document.getElementById("clock").textContent = 
+      String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+    
+    const options = { month: 'long', day: 'numeric', weekday: 'long' };
+    document.getElementById("date").textContent = now.toLocaleDateString('en-US', options).toUpperCase();
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const keys = Object.keys(engines);
+      setActiveEngine(keys[(keys.indexOf(currentEngine) + 1) % keys.length]);
+    }
+  });
+})();
+</script>
+</body>
+</html>
