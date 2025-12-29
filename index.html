@@ -3,13 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spatial Desktop | Ultra Vivid Edition</title>
+<title>Spatial Desktop | Ultimate Precision</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;900&family=Lexend+Deca:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  /* 关键：使用更高亮度的白色系 */
   --glass-bg: rgba(255, 255, 255, 0.12);
   --glass-border: rgba(255, 255, 255, 0.4);
   --pill-active: rgba(255, 255, 255, 0.3);
@@ -19,79 +18,51 @@
 * { box-sizing: border-box; margin: 0; padding: 0; cursor: default; }
 
 body {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #000;
-  font-family: 'Lexend Deca', sans-serif;
-  overflow: hidden;
-  perspective: 2000px;
+  height: 100vh; width: 100vw;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background-color: #000; font-family: 'Lexend Deca', sans-serif;
+  overflow: hidden; perspective: 2000px;
+  /* 修复字体抖动 */
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #bg-container {
-  position: absolute;
-  top: -10%; left: -10%; width: 120%; height: 120%;
+  position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
   background: url('https://api.dujin.org/bing/1920.php') no-repeat center center/cover;
-  z-index: -1;
-  transition: transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1);
-  /* 增强对比度和亮度，解决背景暗的问题 */
+  z-index: -1; transform: scale(1.1) translate3d(0, 0, 0);
   filter: brightness(1.05) contrast(1.15) saturate(1.1);
+  transition: transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+  backface-visibility: hidden; /* 防止闪烁 */
 }
 
-/* --- 时钟：加粗、纯白、发光 --- */
-.time-area {
-  position: absolute;
-  top: 8vh; 
-  text-align: center;
-  pointer-events: none;
-}
+.time-area { margin-top: -5vh; margin-bottom: 50px; text-align: center; pointer-events: none; z-index: 2; }
 
 #clock {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 110px;
-  font-weight: 500; /* 字重适中，确保清晰度 */
-  line-height: 1;
-  letter-spacing: 25px;
-  color: var(--text-pure);
-  /* 关键：增加强力投影，防止文字融入背景 */
+  font-family: 'Montserrat', sans-serif; font-size: 110px; font-weight: 500;
+  line-height: 1; letter-spacing: 25px; color: var(--text-pure);
   filter: drop-shadow(0 0 25px rgba(0,0,0,0.5));
-  text-shadow: 0 0 15px rgba(255,255,255,0.3);
 }
 
 #date-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 10px;
-  margin-top: 15px;
-  color: var(--text-pure);
-  text-transform: uppercase;
-  filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+  display: flex; justify-content: center; align-items: center;
+  gap: 25px; font-size: 14px; font-weight: 600; letter-spacing: 10px;
+  margin-top: 15px; color: var(--text-pure); text-transform: uppercase;
 }
 
-/* --- 核心卡片：极致饱和与清透 --- */
 .card {
-  position: relative;
-  width: 92%; max-width: 660px; padding: 50px;
+  position: relative; width: 92%; max-width: 660px; padding: 50px;
   background: var(--glass-bg);
-  /* 极高饱和度（300%）是解决灰蒙蒙的关键 */
   backdrop-filter: blur(35px) saturate(300%) contrast(1.1);
   -webkit-backdrop-filter: blur(35px) saturate(300%) contrast(1.1);
-  border-radius: 45px;
-  border: 1px solid var(--glass-border);
+  border-radius: 45px; border: 1px solid var(--glass-border);
   box-shadow: 0 40px 120px rgba(0,0,0,0.7);
+  transform: translate3d(0, 0, 0); transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.15, 0.88, 0.3, 1);
-  transform-style: preserve-3d;
-  overflow: hidden;
+  overflow: hidden; z-index: 5;
+  backface-visibility: hidden;
 }
 
-/* 随动流光高光：增加白色浓度 */
 .card-glow {
   position: absolute; inset: 0;
   background: radial-gradient(500px circle at var(--x) var(--y), rgba(255,255,255,0.3), transparent 60%);
@@ -102,43 +73,33 @@ body {
 
 input {
   width: 100%; padding: 22px 35px; border-radius: 22px; border: none;
-  background: rgba(255, 255, 255, 0.15); /* 输入框也亮起来 */
-  color: #fff; font-size: 22px; outline: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.4s ease;
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.15); color: #fff; font-size: 22px; outline: none;
+  border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.4s ease;
 }
 
-input:focus {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 0 30px rgba(255,255,255,0.1);
-}
-
-input::placeholder { color: rgba(255,255,255,0.6); }
-
-/* 切换按钮组：高对比度设计 */
 .engine-tabs {
   display: flex; position: relative; justify-content: space-between;
-  margin-top: 40px; padding: 6px; 
-  background: rgba(0, 0, 0, 0.4); /* 深色槽位突出白色滑块 */
-  border-radius: 20px;
+  margin-top: 40px; padding: 6px; background: rgba(0, 0, 0, 0.4); border-radius: 20px;
 }
 
 .nav-pill {
   position: absolute; top: 6px; left: 6px; height: calc(100% - 12px);
   background: var(--pill-active); border-radius: 14px;
-  box-shadow: 0 0 20px rgba(255,255,255,0.15);
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); z-index: 0;
+  pointer-events: none; /* 防止遮挡按钮点击 */
+  width: 20%; /* 预设基础宽度防止刷新闪烁 */
 }
 
 .engine-btn {
   background: transparent; border: none; color: #fff; opacity: 0.7;
   padding: 12px 0; cursor: pointer; font-size: 11px; font-weight: 600;
   letter-spacing: 2px; flex: 1; position: relative; z-index: 1;
+  outline: none; /* 移除默认蓝框，由 pill 处理视觉焦点 */
 }
 
 .engine-btn.active { opacity: 1; font-weight: 700; }
+/* 增加键盘焦点样式支持 */
+.engine-btn:focus-visible { opacity: 1; text-decoration: underline; }
 
 .footer { position: fixed; bottom: 30px; font-size: 10px; letter-spacing: 12px; opacity: 0.7; color: #fff; }
 </style>
@@ -177,10 +138,26 @@ input::placeholder { color: rgba(255,255,255,0.6); }
   const bg = document.getElementById("bg-container");
   const pill = document.getElementById("nav-pill");
   const buttons = document.querySelectorAll(".engine-btn");
+  const input = document.getElementById("search-input");
+
+  const engines = { 
+    gg: "https://www.google.com/search?q=", 
+    bi: "https://www.bing.com/search?q=", 
+    bd: "https://www.baidu.com/s?wd=", 
+    dg: "https://duckduckgo.com/?q=", 
+    gh: "https://github.com/search?q=" 
+  };
+  
+  let currentEngine = localStorage.getItem("preferredEngine") || "gg";
 
   const updatePillPosition = (activeBtn) => {
-    pill.style.width = `${activeBtn.offsetWidth}px`;
-    pill.style.transform = `translateX(${activeBtn.offsetLeft - 6}px)`;
+    if (!activeBtn) return;
+    // 使用 getBoundingClientRect 获取更精准的物理像素
+    const rect = activeBtn.getBoundingClientRect();
+    const parentRect = activeBtn.parentElement.getBoundingClientRect();
+    
+    pill.style.width = rect.width + "px";
+    pill.style.transform = `translateX(${rect.left - parentRect.left - 6}px)`;
   };
 
   const setActiveEngine = (id) => {
@@ -188,11 +165,18 @@ input::placeholder { color: rgba(255,255,255,0.6); }
     if (activeBtn) {
       buttons.forEach(btn => btn.classList.remove("active"));
       activeBtn.classList.add("active");
-      updatePillPosition(activeBtn);
+      
+      currentEngine = id; 
       localStorage.setItem("preferredEngine", id);
+      
+      // 使用双重 RequestAnimationFrame 确保在复杂渲染下依然能准确定位
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => updatePillPosition(activeBtn));
+      });
     }
   };
 
+  // 视差效果
   document.addEventListener("mousemove", (e) => {
     const x = (window.innerWidth / 2 - e.pageX) / 160;
     const y = (window.innerHeight / 2 - e.pageY) / 160;
@@ -203,10 +187,33 @@ input::placeholder { color: rgba(255,255,255,0.6); }
     card.style.setProperty("--y", `${e.clientY - rect.top}px`);
   });
 
-  const engines = { gg: "https://www.google.com/search?q=", bi: "https://www.bing.com/search?q=", bd: "https://www.baidu.com/s?wd=", dg: "https://duckduckgo.com/?q=", gh: "https://github.com/search?q=" };
-  let currentEngine = localStorage.getItem("preferredEngine") || "gg";
-  buttons.forEach(btn => btn.onclick = () => setActiveEngine(btn.dataset.engine));
-  window.onload = () => setActiveEngine(currentEngine);
+  // 绑定交互：点击 + Tab 切换
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => setActiveEngine(btn.dataset.engine));
+    // 修复 Bug：支持 Tab 键焦点同步
+    btn.addEventListener('focus', () => setActiveEngine(btn.dataset.engine));
+  });
+
+  document.getElementById("search-form").onsubmit = e => { 
+    e.preventDefault(); 
+    const val = input.value.trim();
+    if (val) window.location.href = engines[currentEngine] + encodeURIComponent(val);
+  };
+
+  // 初始化流程优化
+  window.addEventListener('load', () => {
+    setActiveEngine(currentEngine);
+    // 针对 Edge 首页加载特性的延迟补偿
+    setTimeout(() => {
+      const activeBtn = document.querySelector(".engine-btn.active");
+      updatePillPosition(activeBtn);
+    }, 150);
+  });
+
+  window.addEventListener('resize', () => {
+    const activeBtn = document.querySelector(".engine-btn.active");
+    updatePillPosition(activeBtn);
+  });
 
   function updateTime() {
     const now = new Date();
@@ -215,12 +222,6 @@ input::placeholder { color: rgba(255,255,255,0.6); }
     document.getElementById("day-text").textContent = now.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
   }
   setInterval(updateTime, 1000); updateTime();
-
-  document.getElementById("search-form").onsubmit = e => { 
-    e.preventDefault(); 
-    const val = document.getElementById("search-input").value.trim();
-    if (val) window.location.href = engines[currentEngine] + encodeURIComponent(val); 
-  };
 })();
 </script>
 </body>
