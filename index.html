@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spatial Desktop | Fix Background</title>
+<title>Spatial Desktop | Gold Standard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;900&family=Lexend+Deca:wght@400;600&display=swap" rel="stylesheet">
 
@@ -22,7 +22,7 @@ body {
   display: flex; flex-direction: column; align-items: center;
   justify-content: flex-start;
   padding-top: 12vh;
-  background-color: #1a1a1a; /* 稍微亮一点的底色，防止纯黑死板 */
+  background-color: #1a1a1a;
   font-family: 'Lexend Deca', sans-serif;
   overflow: hidden; perspective: 2000px;
   -webkit-font-smoothing: antialiased;
@@ -31,12 +31,11 @@ body {
 #bg-container {
   position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
   z-index: -1; transform: scale(1.1) translate3d(0, 0, 0);
-  /* 设置默认背景图，防止 JS 失效时黑屏 */
+  /* 基础兜底图 */
   background: url('https://api.dujin.org/bing/1920.php') no-repeat center center/cover;
   filter: brightness(1.05) contrast(1.15) saturate(1.1);
-  transition: transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.5s ease;
+  transition: transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1);
   backface-visibility: hidden;
-  opacity: 1;
 }
 
 .time-area { margin-bottom: 60px; text-align: center; pointer-events: none; z-index: 2; }
@@ -74,9 +73,19 @@ body {
 #search-form { position: relative; z-index: 10; }
 
 input {
-  width: 100%; padding: 22px 35px; border-radius: 22px; border: none;
+  width: 100%; 
+  padding: 22px 40px; /* 增加左右内边距 */
+  border-radius: 22px; border: none;
   background: rgba(255, 255, 255, 0.15); color: #fff; font-size: 22px; outline: none;
-  border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  transition: all 0.4s ease;
+  /* 确保长文字不会溢出 */
+  text-overflow: ellipsis;
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .engine-tabs {
@@ -119,7 +128,7 @@ input {
 <div class="card" id="parallax-card">
   <div class="card-glow" id="card-glow"></div>
   <form id="search-form">
-    <input id="search-input" autofocus autocomplete="off" placeholder="">
+    <input id="search-input" autofocus autocomplete="off" placeholder="Discover anything...">
     <div class="engine-tabs" id="engine-bar">
       <div class="nav-pill" id="nav-pill"></div>
       <button type="button" class="engine-btn" data-engine="gg">GOOGLE</button>
@@ -139,17 +148,13 @@ input {
   const buttons = document.querySelectorAll(".engine-btn");
   const input = document.getElementById("search-input");
 
-  // 1. 强化背景更新逻辑：预加载确保不黑屏
+  // 背景更新逻辑
   function updateWallpaper() {
     const today = new Date().toISOString().slice(0, 10);
     const imgUrl = `https://api.dujin.org/bing/1920.php?d=${today}`;
-    
-    // 创建一个虚拟图片对象预加载
     const img = new Image();
     img.src = imgUrl;
-    img.onload = () => {
-      bg.style.backgroundImage = `url('${imgUrl}')`;
-    };
+    img.onload = () => { bg.style.backgroundImage = `url('${imgUrl}')`; };
   }
   updateWallpaper();
 
@@ -184,6 +189,7 @@ input {
     }
   };
 
+  // 视差效果逻辑
   document.addEventListener("mousemove", (e) => {
     const x = (window.innerWidth / 2 - e.pageX) / 160;
     const y = (window.innerHeight / 2 - e.pageY) / 160;
