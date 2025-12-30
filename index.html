@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spatial Desktop | Ultimate Precision</title>
+<title>Spatial Desktop | Fix Background</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;900&family=Lexend+Deca:wght@400;600&display=swap" rel="stylesheet">
 
@@ -19,24 +19,27 @@
 
 body {
   height: 100vh; width: 100vw;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background-color: #000; font-family: 'Lexend Deca', sans-serif;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start;
+  padding-top: 12vh;
+  background-color: #1a1a1a; /* 稍微亮一点的底色，防止纯黑死板 */
+  font-family: 'Lexend Deca', sans-serif;
   overflow: hidden; perspective: 2000px;
-  /* 修复字体抖动 */
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 #bg-container {
   position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
-  background: url('https://api.dujin.org/bing/1920.php') no-repeat center center/cover;
   z-index: -1; transform: scale(1.1) translate3d(0, 0, 0);
+  /* 设置默认背景图，防止 JS 失效时黑屏 */
+  background: url('https://api.dujin.org/bing/1920.php') no-repeat center center/cover;
   filter: brightness(1.05) contrast(1.15) saturate(1.1);
-  transition: transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1);
-  backface-visibility: hidden; /* 防止闪烁 */
+  transition: transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.5s ease;
+  backface-visibility: hidden;
+  opacity: 1;
 }
 
-.time-area { margin-top: -5vh; margin-bottom: 50px; text-align: center; pointer-events: none; z-index: 2; }
+.time-area { margin-bottom: 60px; text-align: center; pointer-events: none; z-index: 2; }
 
 #clock {
   font-family: 'Montserrat', sans-serif; font-size: 110px; font-weight: 500;
@@ -60,7 +63,6 @@ body {
   transform: translate3d(0, 0, 0); transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.15, 0.88, 0.3, 1);
   overflow: hidden; z-index: 5;
-  backface-visibility: hidden;
 }
 
 .card-glow {
@@ -86,20 +88,17 @@ input {
   position: absolute; top: 6px; left: 6px; height: calc(100% - 12px);
   background: var(--pill-active); border-radius: 14px;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); z-index: 0;
-  pointer-events: none; /* 防止遮挡按钮点击 */
-  width: 20%; /* 预设基础宽度防止刷新闪烁 */
+  pointer-events: none;
 }
 
 .engine-btn {
   background: transparent; border: none; color: #fff; opacity: 0.7;
   padding: 12px 0; cursor: pointer; font-size: 11px; font-weight: 600;
   letter-spacing: 2px; flex: 1; position: relative; z-index: 1;
-  outline: none; /* 移除默认蓝框，由 pill 处理视觉焦点 */
+  outline: none;
 }
 
 .engine-btn.active { opacity: 1; font-weight: 700; }
-/* 增加键盘焦点样式支持 */
-.engine-btn:focus-visible { opacity: 1; text-decoration: underline; }
 
 .footer { position: fixed; bottom: 30px; font-size: 10px; letter-spacing: 12px; opacity: 0.7; color: #fff; }
 </style>
@@ -112,7 +111,7 @@ input {
 <div class="time-area">
   <div id="clock">00:00</div>
   <div id="date-info">
-    <span id="date-text">DECEMBER 29</span>
+    <span id="date-text">JANUARY 01</span>
     <span id="day-text">MONDAY</span>
   </div>
 </div>
@@ -140,6 +139,20 @@ input {
   const buttons = document.querySelectorAll(".engine-btn");
   const input = document.getElementById("search-input");
 
+  // 1. 强化背景更新逻辑：预加载确保不黑屏
+  function updateWallpaper() {
+    const today = new Date().toISOString().slice(0, 10);
+    const imgUrl = `https://api.dujin.org/bing/1920.php?d=${today}`;
+    
+    // 创建一个虚拟图片对象预加载
+    const img = new Image();
+    img.src = imgUrl;
+    img.onload = () => {
+      bg.style.backgroundImage = `url('${imgUrl}')`;
+    };
+  }
+  updateWallpaper();
+
   const engines = { 
     gg: "https://www.google.com/search?q=", 
     bi: "https://www.bing.com/search?q=", 
@@ -152,10 +165,8 @@ input {
 
   const updatePillPosition = (activeBtn) => {
     if (!activeBtn) return;
-    // 使用 getBoundingClientRect 获取更精准的物理像素
     const rect = activeBtn.getBoundingClientRect();
     const parentRect = activeBtn.parentElement.getBoundingClientRect();
-    
     pill.style.width = rect.width + "px";
     pill.style.transform = `translateX(${rect.left - parentRect.left - 6}px)`;
   };
@@ -165,18 +176,14 @@ input {
     if (activeBtn) {
       buttons.forEach(btn => btn.classList.remove("active"));
       activeBtn.classList.add("active");
-      
       currentEngine = id; 
       localStorage.setItem("preferredEngine", id);
-      
-      // 使用双重 RequestAnimationFrame 确保在复杂渲染下依然能准确定位
       requestAnimationFrame(() => {
         requestAnimationFrame(() => updatePillPosition(activeBtn));
       });
     }
   };
 
-  // 视差效果
   document.addEventListener("mousemove", (e) => {
     const x = (window.innerWidth / 2 - e.pageX) / 160;
     const y = (window.innerHeight / 2 - e.pageY) / 160;
@@ -187,10 +194,8 @@ input {
     card.style.setProperty("--y", `${e.clientY - rect.top}px`);
   });
 
-  // 绑定交互：点击 + Tab 切换
   buttons.forEach(btn => {
     btn.addEventListener('click', () => setActiveEngine(btn.dataset.engine));
-    // 修复 Bug：支持 Tab 键焦点同步
     btn.addEventListener('focus', () => setActiveEngine(btn.dataset.engine));
   });
 
@@ -200,19 +205,15 @@ input {
     if (val) window.location.href = engines[currentEngine] + encodeURIComponent(val);
   };
 
-  // 初始化流程优化
   window.addEventListener('load', () => {
     setActiveEngine(currentEngine);
-    // 针对 Edge 首页加载特性的延迟补偿
     setTimeout(() => {
-      const activeBtn = document.querySelector(".engine-btn.active");
-      updatePillPosition(activeBtn);
-    }, 150);
+      updatePillPosition(document.querySelector(".engine-btn.active"));
+    }, 200);
   });
 
   window.addEventListener('resize', () => {
-    const activeBtn = document.querySelector(".engine-btn.active");
-    updatePillPosition(activeBtn);
+    updatePillPosition(document.querySelector(".engine-btn.active"));
   });
 
   function updateTime() {
